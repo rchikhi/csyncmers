@@ -59,7 +59,7 @@ void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, 
     size_t num_s_mers = len - S + 1;
     __uint128_t *s_mer_hashes = (__uint128_t *)malloc(num_s_mers * sizeof(__uint128_t));
 
-    // Precompute all s-mer hashes (same as before)
+    // Precompute all s-mer hashes
     __uint128_t mask = (((__uint128_t)1) << (2 * S)) - 1;
     __uint128_t hash_fwd = 0, hash_rev = 0;
     __uint128_t rc_shift = 2 * (S - 1);
@@ -97,7 +97,6 @@ void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, 
             size_t kmer_pos = i - window_size + 1;
             if(min_pos == kmer_pos || min_pos == kmer_pos + K - S) {
             	//printf("%.*s\n", K, &sequence_input[i]);
-                //printf("%ld (%ld) ", kmer_start, (uint64_t)canonical_hash);
                 add_minimizer(results, num_results, s_mer_hashes[min_pos], kmer_pos, min_pos);
             }
         }
