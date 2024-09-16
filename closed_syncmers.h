@@ -20,7 +20,7 @@ typedef struct {
 } MinimizerResult;
 
 // Main function to compute closed syncmers
-void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, MinimizerResult result[1000], int *num_results);
+void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, MinimizerResult *result, int *num_results);
 
 /*** Implementation ***/
 
@@ -41,14 +41,14 @@ static inline uint8_t complement_base(uint8_t base) {
 }
 
 // Dynamically resize array for minimizers
-static void add_minimizer(MinimizerResult results[1000], int *size, __uint128_t minimizer_hash, size_t position) {
+static void add_minimizer(MinimizerResult *results, int *size, __uint128_t minimizer_hash, size_t position) {
     results[*size].minimizer_hash = minimizer_hash;
     results[*size].position = position;
     (*size)++;
 }
 
 // Compute closed syncmers
-void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, MinimizerResult results[1000], int *num_results) {
+void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, MinimizerResult *results, int *num_results) {
     *num_results = 0;
     if(len < K) {
         fprintf(stderr, "Sequence length is less than K\n");
@@ -67,11 +67,7 @@ void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, 
         uint8_t base = base_to_bits(sequence_input[i]);
         hash_fwd = ((hash_fwd << 2) | base) & mask;
         uint8_t comp_base = complement_base(base);
-        if(i < S) {
-            hash_rev |= ((__uint128_t)comp_base << (2 * i));
-        } else {
-            hash_rev = ((hash_rev >> 2) | ((__uint128_t)comp_base << rc_shift)) & mask;
-        }
+        hash_rev = ((hash_rev >> 2) | ((__uint128_t)comp_base << rc_shift)) & mask;
         if(i >= S - 1) {
             size_t s_mer_pos = i - S + 1;
             __uint128_t canonical_hash = (hash_fwd < hash_rev) ? hash_fwd : hash_rev;
@@ -97,7 +93,7 @@ void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, 
 
         // Check if minimal s-mer is at start or end
         if(min_pos == start_s_mer_pos || min_pos == end_s_mer_pos) {
-            printf("%.*s\n", K, &sequence_input[i]);
+            //printf("%.*s\n", K, &sequence_input[i]);
             //printf("%ld (%ld) ", kmer_start, (uint64_t)canonical_hash);
             add_minimizer(results, num_results, min_hash, i);
         }

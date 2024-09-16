@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     int num_results;
-    MinimizerResult results[1000];
+    MinimizerResult results[10000];
     compute_closed_syncmers(sequence_input, strlen(sequence_input), K, S, results, &num_results);
 
     printf("Closed Syncmers:\n");
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
     // Compute closed syncmers using the naive method
     int num_naive_results;
-    MinimizerResult naive_results[1000];
+    MinimizerResult naive_results[10000];
     compute_closed_syncmers_naive(sequence_input, strlen(sequence_input), K, S, naive_results, &num_naive_results);
 
     printf("\nClosed Syncmers (Naive):\n");

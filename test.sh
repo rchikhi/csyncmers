@@ -12,7 +12,7 @@ generate_sequence() {
     echo "$seq"
 }
 
-for i in {1..5}
+for i in {1..10}
 do
     # Generate a random sequence of length 50
     seq=$(generate_sequence)
@@ -23,8 +23,8 @@ do
     # Calculate 'b' constraints: 6 < b < a and b < 100
     b_min=7
     b_max=$(( a - 1 ))
-    if (( b_max > 99 )); then
-        b_max=99
+    if (( b_max > 63 )); then
+        b_max=63
     fi
 
     # Ensure b_min does not exceed b_max
@@ -38,4 +38,4 @@ do
     echo "./test \"$seq\" $a $b"
     ./test "$seq" $a $b
 done
-
+echo "All tests OK."

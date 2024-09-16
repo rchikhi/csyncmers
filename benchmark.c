@@ -6,7 +6,7 @@
 #include <string.h>
 #include <time.h>
 
-#define NUM_SEQUENCES 70
+#define NUM_SEQUENCES 7000
 #define SEQUENCE_LENGTH 10000
 #define K 500
 #define S 40
@@ -35,13 +35,13 @@ int main() {
         sequences[i][SEQUENCE_LENGTH] = '\0'; // Null-terminate the string
     }
     int num_results;
-    MinimizerResult results[1000];
+    MinimizerResult results[10000];
 
     // Time the computation
     clock_t start = clock();
     for (int i = 0; i < NUM_SEQUENCES; i++) {
-        //compute_closed_syncmers(sequences[i], SEQUENCE_LENGTH, K, S, results, &num_results);
-        compute_closed_syncmers_naive(sequences[i], SEQUENCE_LENGTH, K, S, results, &num_results);
+        compute_closed_syncmers(sequences[i], SEQUENCE_LENGTH, K, S, results, &num_results);
+        //compute_closed_syncmers_naive(sequences[i], SEQUENCE_LENGTH, K, S, results, &num_results);
     }
     clock_t end = clock();
     double total_time = (double)(end - start) / CLOCKS_PER_SEC;
