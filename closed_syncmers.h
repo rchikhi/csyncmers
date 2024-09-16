@@ -47,7 +47,6 @@ static void add_minimizer(MinimizerResult *results, int *size, __uint128_t minim
     (*size)++;
 }
 
-// Compute closed syncmers
 void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, MinimizerResult *results, int *num_results) {
     *num_results = 0;
     if(len < K) {
@@ -58,7 +57,7 @@ void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, 
     size_t num_s_mers = len - S + 1;
     __uint128_t *s_mer_hashes = (__uint128_t *)malloc(num_s_mers * sizeof(__uint128_t));
 
-    // Precompute all s-mer hashes
+    // Precompute all s-mer hashes (same as before)
     __uint128_t mask = (((__uint128_t)1) << (2 * S)) - 1;
     __uint128_t hash_fwd = 0, hash_rev = 0;
     __uint128_t rc_shift = 2 * (S - 1);
@@ -75,29 +74,37 @@ void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, 
         }
     }
 
-    // Iterate over k-mers
-    size_t num_k_mers = len - K + 1;
-    for(size_t i = 0; i < num_k_mers; i++) {
-        size_t start_s_mer_pos = i;
-        size_t end_s_mer_pos = i + K - S;
-        __uint128_t min_hash = s_mer_hashes[start_s_mer_pos];
-        size_t min_pos = start_s_mer_pos;
+    // Initialize deque
+    // it looks like this:
+    // [ hash0, hash1, (back) hash2, ...., (front) hash_2+S-x, ..., hash_len-S+1 ]
+    size_t window_size = K - S + 1;
+    size_t *deque = (size_t *)malloc(num_s_mers * sizeof(size_t));
+    size_t front = 0, back = 0;
 
-        // Find minimal s-mer in the k-mer
-        for(size_t j = start_s_mer_pos; j <= end_s_mer_pos; j++) {
-            if(s_mer_hashes[j] < min_hash) {
-                min_hash = s_mer_hashes[j];
-                min_pos = j;
+    // Use deque to find minimal s-mers in O(N)
+    for(size_t i = 0; i < num_s_mers; i++) {
+        while(back > front  && s_mer_hashes[deque[back-1]] > s_mer_hashes[i]) {
+            back--;
+        }
+        deque[back++] = i;
+	 if(i >= window_size && deque[front] <= i - window_size) {
+            front++;
+	}
+
+        // Check for closed syncmer condition
+        if(i >= window_size - 1) {
+            size_t min_pos = deque[front];
+            size_t kmer_pos = i - window_size + 1;
+            if(min_pos == kmer_pos || min_pos == kmer_pos + K - S) {
+            	//printf("%.*s\n", K, &sequence_input[i]);
+                //printf("%ld (%ld) ", kmer_start, (uint64_t)canonical_hash);
+                add_minimizer(results, num_results, s_mer_hashes[min_pos], kmer_pos);
             }
         }
-
-        // Check if minimal s-mer is at start or end
-        if(min_pos == start_s_mer_pos || min_pos == end_s_mer_pos) {
-            //printf("%.*s\n", K, &sequence_input[i]);
-            //printf("%ld (%ld) ", kmer_start, (uint64_t)canonical_hash);
-            add_minimizer(results, num_results, min_hash, i);
-        }
     }
+
+    free(s_mer_hashes);
+    free(deque);
 }
 
 #ifdef __cplusplus

@@ -7,7 +7,7 @@
 #include <time.h>
 
 #define NUM_SEQUENCES 7000
-#define SEQUENCE_LENGTH 10000
+#define SEQUENCE_LENGTH 20000
 #define K 500
 #define S 40
 
