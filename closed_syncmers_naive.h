@@ -50,7 +50,8 @@ void compute_closed_syncmers_naive(const char *sequence, size_t seq_len, int K, 
         // Check if the minimal s-mer is at the first or last position within the k-mer
         if (min_pos_in_kmer == 0 || min_pos_in_kmer == K - S) {
             // Record the position and minimizer hash
-            results[*num_results].position = i;
+            results[*num_results].kmer_position = i;
+            results[*num_results].smer_position = i + min_pos_in_kmer;
             results[*num_results].minimizer_hash = min_hash;
             (*num_results)++;
         }

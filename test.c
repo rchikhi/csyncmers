@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     printf("Closed Syncmers:\n");
     printf("%-20s %-20s\n", "Position", "Minimizer Hash");
     for (int i = 0; i < num_results; i++) {
-        printf("%-20zu %-20llu\n", results[i].position, (unsigned long long)results[i].minimizer_hash);
+        printf("%-20zu %-20llu\n", results[i].kmer_position, (unsigned long long)results[i].minimizer_hash);
     }
 
     // Compute closed syncmers using the naive method
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     printf("\nClosed Syncmers (Naive):\n");
     printf("%-20s %-20s\n", "Position", "Minimizer Hash");
     for (int i = 0; i < num_naive_results; i++) {
-        printf("%-20zu %-20llu\n", naive_results[i].position, (unsigned long long)naive_results[i].minimizer_hash);
+        printf("%-20zu %-20llu\n", naive_results[i].kmer_position, (unsigned long long)naive_results[i].minimizer_hash);
     }
 
     // Compare the results
@@ -43,10 +43,10 @@ int main(int argc, char *argv[]) {
     // Compare each result
     int mismatch = 0;
     for (int i = 0; i < num_results; i++) {
-        if (results[i].position != naive_results[i].position || results[i].minimizer_hash != naive_results[i].minimizer_hash) {
+        if (results[i].kmer_position != naive_results[i].kmer_position || results[i].minimizer_hash != naive_results[i].minimizer_hash) {
             printf("Mismatch at index %d:\n", i);
-            printf("  Original -> Position: %zu, Hash: %llu\n", results[i].position, (unsigned long long)results[i].minimizer_hash);
-            printf("  Naive    -> Position: %zu, Hash: %llu\n", naive_results[i].position, (unsigned long long)naive_results[i].minimizer_hash);
+            printf("  Original -> Position: %zu, Hash: %llu\n", results[i].kmer_position, (unsigned long long)results[i].minimizer_hash);
+            printf("  Naive    -> Position: %zu, Hash: %llu\n", naive_results[i].kmer_position, (unsigned long long)naive_results[i].minimizer_hash);
             mismatch = 1;
 	    exit(1);
         }

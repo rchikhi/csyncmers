@@ -16,7 +16,8 @@ extern "C" {
 // Struct to hold minimizer and its position
 typedef struct {
     __uint128_t minimizer_hash;
-    size_t position;
+    size_t kmer_position;
+    size_t smer_position;
 } MinimizerResult;
 
 // Main function to compute closed syncmers
@@ -41,9 +42,10 @@ static inline uint8_t complement_base(uint8_t base) {
 }
 
 // Dynamically resize array for minimizers
-static void add_minimizer(MinimizerResult *results, int *size, __uint128_t minimizer_hash, size_t position) {
+static void add_minimizer(MinimizerResult *results, int *size, __uint128_t minimizer_hash, size_t kmer_position, size_t smer_position) {
     results[*size].minimizer_hash = minimizer_hash;
-    results[*size].position = position;
+    results[*size].kmer_position = kmer_position;
+    results[*size].smer_position = smer_position;
     (*size)++;
 }
 
@@ -75,8 +77,6 @@ void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, 
     }
 
     // Initialize deque
-    // it looks like this:
-    // [ hash0, hash1, (back) hash2, ...., (front) hash_2+S-x, ..., hash_len-S+1 ]
     size_t window_size = K - S + 1;
     size_t *deque = (size_t *)malloc(num_s_mers * sizeof(size_t));
     size_t front = 0, back = 0;
@@ -98,7 +98,7 @@ void compute_closed_syncmers(const char *sequence_input, int len, int K, int S, 
             if(min_pos == kmer_pos || min_pos == kmer_pos + K - S) {
             	//printf("%.*s\n", K, &sequence_input[i]);
                 //printf("%ld (%ld) ", kmer_start, (uint64_t)canonical_hash);
-                add_minimizer(results, num_results, s_mer_hashes[min_pos], kmer_pos);
+                add_minimizer(results, num_results, s_mer_hashes[min_pos], kmer_pos, min_pos);
             }
         }
     }
