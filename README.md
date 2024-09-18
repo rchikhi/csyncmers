@@ -1,6 +1,6 @@
 # CSyncmers
 
-Closed syncmers in pure C. Supports arbitrary k values and s < 64 (using `uint128_t`). Achieves around 60 MB/sec throughput.
+Closed syncmers in pure C. Supports arbitrary k values and s < 64 (using `uint128_t`). s-mers are selected according to lexicographic order. Achieves around 60 MB/sec throughput.
 
 
 
